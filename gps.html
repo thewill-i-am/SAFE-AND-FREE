@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Testing</title>
+</head>
+
+<body>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.1/firebase-database.js"></script>
+
+    <script>
+        // Initialize and add the map
+        function initMap() {
+            // The location of Uluru
+            const uluru = { lat: 9.8893941, lng: -84.0895493 };
+            // The map, centered at Uluru
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 4,
+                center: uluru,
+            });
+            // The marker, positioned at Uluru
+            const marker = new google.maps.Marker({
+                position: uluru,
+                map: map,
+            });
+        }
+
+        window.initMap = initMap;
+    </script>
+
+    <style>
+        body {
+            font-family: "Helvetica", Sans-Serif;
+            text-align: center;
+            background: rgb(2,0,36);
+            background: linear-gradient(90deg, rgba(2,0,36,1) 0%, rgba(255,255,255,1) 0%, rgba(0,212,255,1) 100%);
+        }
+
+        /* Set the size of the div element that contains the map */
+        #map {
+            border: 5px solid black;
+            height: 400px;
+            /* The height is 400 pixels */
+            margin-left: 20%;
+            width: 60%;
+            /* The width is the width of the web page */
+        }
+    </style>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <div>
+        <h1>Safe and Free</h1>
+        <br>
+        <div class="">
+            <span>Cordenadas: </span>
+            <span id="localization"></span>
+        </div>
+        <br>
+        <div class="">
+            <span>Estado: </span>
+            <span id="mensaje"></span>
+        </div>
+        <br>
+        <div class="">
+            <span>Frecuencia Cardiaca en: </span>
+            <span id="frecuenciaCardiaca"></span>
+        </div>
+        <br>
+        <div class="">
+            <div id="map"></div>
+        </div>
+
+    </div>
+
+    <script type="module">
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-analytics.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/9.9.3/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "9d1317827af6700fd38dfd56da9dc1beae0f58a7",
+            authDomain: "arduino-conection.firebaseapp.com",
+            databaseURL: "https://safe-and-free-default-rtdb.firebaseio.com/",
+            projectId: "arduino-conection",
+            storageBucket: "arduino-conection.appspot.com",
+            messagingSenderId: "176530931207",
+            appId: "1:176530931207:web:6ecef244cf6780ef5474a2",
+            measurementId: "G-G8YPSP0B34"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        const starCountRef = ref(db, 'mensaje');
+        const frecuenciaRef = ref(db, 'frecuenciaCardiaca');
+        const localizacionRef = ref(db, 'localizacion');
+
+        onValue(starCountRef, (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById("mensaje").innerHTML = data
+            console.log(data);
+        });
+
+        onValue(frecuenciaRef, (snapshot) => {
+            const data = snapshot.val();
+            document.getElementById("frecuenciaCardiaca").innerHTML = data + " bpm"
+            console.log(data);
+        });
+
+        onValue(localizacionRef, (snapshot) => {
+            const data = snapshot.val();
+
+            var cor = data.split(",")
+
+            const uluru = { lat: Number(cor[0]), lng: Number(cor[1]) };
+
+            const map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 4,
+                center: uluru,
+            });
+            // The marker, positioned at Uluru
+            const marker = new google.maps.Marker({
+                position: uluru,
+                map: map,
+            });
+
+
+            document.getElementById("localization").innerHTML = `Longitud: ${cor[0]} y Latitud: ${cor[1]}`;
+        });
+
+    </script>
+
+
+</body>
+
+
+<script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBXvodJ1BTbGIVjYsnBe7cEXVUPgnM5Nus&libraries=drawing&callback=initMap"
+    async defer></script>
+
+</html>
